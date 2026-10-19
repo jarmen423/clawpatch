@@ -163,6 +163,43 @@ describe("extractJson", () => {
     });
   });
 
+  it("ignores malformed prose between balanced candidates", () => {
+    const input = 'thinking { not-json } note "unfinished final {"ok":true}';
+
+    expect(extractJson(input)).toEqual({ ok: true });
+  });
+
+  it("ignores unmatched braces inside quoted prose", () => {
+    const input = 'Plan: mention "{" or "use { here" then final {"ok":true}';
+
+    expect(extractJson(input)).toEqual({ ok: true });
+  });
+
+  it("recovers JSON with an escaped first key after an unmatched prose quote", () => {
+    const input = 'note "unfinished final {"\\u006futcome":"fixed","reasoning":"ok"}';
+
+    expect(extractJson(input)).toEqual({ outcome: "fixed", reasoning: "ok" });
+  });
+
+  it.each([
+    ['Plan: wrap keys in { braces.\n{"ok":true}', { ok: true }],
+    ['Looking at fn() { ... the result:\n{"findings":[]}', { findings: [] }],
+  ])("skips an unmatched brace before valid JSON", (input, expected) => {
+    expect(extractJson(input)).toEqual(expected);
+  });
+
+  it("uses the final JSON object after an unmatched malformed preamble", () => {
+    const input =
+      'draft { outer: {"outcome":"fixed","reasoning":"draft","commands":[]}\n' +
+      'final {"outcome":"fixed","reasoning":"final","commands":[]}';
+
+    expect(extractJson(input)).toEqual({
+      outcome: "fixed",
+      reasoning: "final",
+      commands: [],
+    });
+  });
+
   it("does not parse nested JSON from malformed preambles", () => {
     const input =
       'draft { outer: {"outcome":"draft","reasoning":"x","commands":[]} } final ' +
@@ -178,6 +215,7 @@ describe("extractJson", () => {
   it("returns null for text with no valid JSON", () => {
     expect(extractJson("no json here at all")).toBeNull();
     expect(extractJson("just some words { unbalanced")).toBeNull();
+    expect(extractJson("{".repeat(40_000))).toBeNull();
   });
 });
 

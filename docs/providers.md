@@ -45,6 +45,7 @@ Codex invocation:
 - fix: workspace-write sandbox
 - output: strict JSON schema via `--output-schema`
 - final message capture: `--output-last-message`
+- JSON extraction accepts fenced results and structured objects after leading prose, including prose with an unmatched brace; recovered results still undergo schema validation.
 - timeout: 300 seconds by default, matching the Cursor provider; override with
   `CLAWPATCH_CODEX_TIMEOUT_MS` or `CLAWPATCH_PROVIDER_TIMEOUT_MS`
 

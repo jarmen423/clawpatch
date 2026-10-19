@@ -2,6 +2,7 @@
 
 ## 0.8.3 - Unreleased
 
+- Fixed provider JSON extraction to recover structured results after unmatched braces in leading prose, thanks @goutamadwant and @notlakshitha.
 - Updated Node setup to 7.1.0, CodeQL to 4.38.3, and both the TruffleHog action and scanner to 3.99.2, thanks @dependabot[bot].
 - Updated Oxfmt to 0.72.0 and Oxlint to 1.87.0 for repository formatting and linting, thanks @dependabot[bot].
 
